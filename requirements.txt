@@ -9,3 +9,8 @@ pdfplumber
 python-dotenv
 pandas
 numpy
+streamlit-agraph
+networkx
+groq
+annotated-text
+reportlab
