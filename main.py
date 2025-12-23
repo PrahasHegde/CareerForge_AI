@@ -192,6 +192,7 @@ if st.session_state.analysis_result:
         "📊 Analysis", 
         "🔥 Heatmap", 
         "🕸️ Skill Graph", 
+        "📝 Cover Letter",   # <--- TAB ADDED HERE
         "🎙️ Interview", 
         "📧 Cold Email", 
         "📝 Rewrite",
@@ -250,8 +251,28 @@ if st.session_state.analysis_result:
             )
             agraph(nodes=nodes, edges=edges, config=config)
 
-    # --- TAB 4: Mock Interview ---
+    # --- TAB 4: Cover Letter (FIXED) ---
     with tabs[3]:
+        st.subheader("📝 Cover Letter Generator")
+        st.info("Generates a tailored cover letter using your resume and the specific job description.")
+        
+        if st.button("Generate Cover Letter"):
+            with st.spinner("Drafting letter..."):
+                # Calls the existing function in llm_engine.py
+                letter_draft = agent.generate_cover_letter(
+                    st.session_state.resume_text, 
+                    st.session_state.job_desc
+                )
+                st.text_area("Your Draft:", letter_draft, height=400)
+                st.download_button(
+                    label="📥 Download as Text",
+                    data=letter_draft,
+                    file_name="Cover_Letter.txt",
+                    mime="text/plain"
+                )
+
+    # --- TAB 5: Mock Interview ---
+    with tabs[4]:
         st.subheader("🎙️ AI Technical Interviewer")
         st.info("The AI will ask a tough question based on your missing skills.")
         
@@ -274,8 +295,8 @@ if st.session_state.analysis_result:
                     st.markdown("### 👨‍🏫 Feedback")
                     st.markdown(feedback)
 
-    # --- TAB 5: Cold Email ---
-    with tabs[4]:
+    # --- TAB 6: Cold Email ---
+    with tabs[5]:
         st.subheader("📧 Networking Outreach")
         recipient = st.selectbox("Recipient Role", ["Hiring Manager", "Technical Recruiter", "Alumni / Peer"])
         
@@ -289,8 +310,8 @@ if st.session_state.analysis_result:
                 )
                 st.text_area("Copy this Draft:", email_draft, height=250)
                 
-    # --- TAB 6: Rewrite ---
-    with tabs[5]:
+    # --- TAB 7: Rewrite ---
+    with tabs[6]:
         st.subheader("✍️ Summary Rewrite")
         if st.button("Rewrite Summary"):
             with st.spinner("Rewriting..."):
@@ -298,8 +319,8 @@ if st.session_state.analysis_result:
                 res = agent.llm.invoke(prompt).content
                 st.success(res)
     
-    # --- TAB 7: Up-Skill (NEW) ---
-    with tabs[6]:
+    # --- TAB 8: Up-Skill ---
+    with tabs[7]:
         st.subheader("🚀 Accelerated Learning Plan")
         st.info("The fastest way to learn is to build. Here is a custom project idea to fill your gaps.")
         
