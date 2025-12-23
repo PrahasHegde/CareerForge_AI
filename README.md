@@ -36,5 +36,3 @@
 3. **Install dependencies**
   ```bash
   pip install -r requirements.txt
-
-4. **Set up Environment Variables Create a .env file**
