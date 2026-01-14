@@ -1,5 +1,4 @@
 import warnings
-# Filter out annoying FAISS and library deprecation warnings to keep UI clean
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", module="duckduckgo_search")
@@ -99,31 +98,49 @@ with st.sidebar:
 # 4. Main UI Layout
 # Hero Header
 st.markdown("""
-<div style="text-align: center; margin-bottom: 40px;">
-    <h1 style="font-size: 3.5rem; margin-bottom: 10px;">CareerForge AI</h1>
-    <p style="font-size: 1.2rem; color: #B0B3B8;">Optimize your profile, master the interview, and land the job.</p>
+<div style="text-align:center; margin-top:20px; margin-bottom:50px;">
+    <h1 style="font-size:3.8rem;">CareerForge AI</h1>
+    <p style="font-size:1.25rem; color:#9ca3af; max-width:700px; margin:auto;">
+        AI-powered resume optimization, cover letters, and interview prep —
+        designed for serious job seekers.
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
+
 # Input Section (Styled Card)
 with st.container():
-    st.markdown("<div class='metric-card' style='text-align: left; padding: 30px;'>", unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 1], gap="large")
+    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
+    col1, col2 = st.columns(2, gap="large")
+
     with col1:
-        st.markdown("#### 📄 Upload Resume")
-        uploaded_file = st.file_uploader("Upload PDF", type=["pdf"], label_visibility="collapsed")
+        st.markdown("### 📄 Resume")
+        uploaded_file = st.file_uploader(
+            "Upload PDF Resume", 
+            type=["pdf"], 
+            label_visibility="collapsed"
+        )
+
     with col2:
-        st.markdown("#### 💼 Job Description")
-        job_desc = st.text_area("Paste JD", height=150, label_visibility="collapsed", placeholder="Paste the job description here...")
+        st.markdown("### 💼 Job Description")
+        job_desc = st.text_area(
+            "Paste Job Description",
+            height=180,
+            label_visibility="collapsed",
+            placeholder="Paste the full job description here..."
+        )
+
     st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
 
 # 5. ANALYSIS LOGIC
 # Centered Analyze Button
+st.markdown("<br>", unsafe_allow_html=True)
 c1, c2, c3 = st.columns([1, 2, 1])
+
 with c2:
-    analyze_btn = st.button("🔍 Analyze & Optimize Profile", type="primary")
+    analyze_btn = st.button("🚀 Analyze & Optimize Profile", use_container_width=True)
+
 
 if analyze_btn:
     if uploaded_file and job_desc and os.getenv("GROQ_API_KEY"):
@@ -179,25 +196,34 @@ if st.session_state.analysis_result:
     
     # Metrics Row
     m1, m2, m3, m4 = st.columns(4)
-    display_metric_card(m1, "Match Score", f"{st.session_state.match_score}%")
-    display_metric_card(m2, "Word Count", len(st.session_state.resume_text.split()))
-    display_metric_card(m3, "Persona", persona)
+
     intel_status = "Active" if st.session_state.company_context else "None"
-    display_metric_card(m4, "Company Intel", intel_status)
+
+    display_metric_card(m1, "Match Score", f"{st.session_state.match_score}%")
+    display_metric_card(m2, "Resume Words", len(st.session_state.resume_text.split()))
+    display_metric_card(m3, "Reviewer Persona", persona)
+    display_metric_card(m4, "Company Intelligence", intel_status)
+
+
     
     st.markdown("<br>", unsafe_allow_html=True)
 
     # Tabs
     tabs = st.tabs([
-        "📊 Analysis", 
-        "🔥 Heatmap", 
-        "🕸️ Skill Graph", 
-        "📝 Cover Letter",   # <--- TAB ADDED HERE
-        "🎙️ Interview", 
-        "📧 Cold Email", 
-        "📝 Rewrite",
-        "🎓 Up-Skill"
-    ])
+    "📊 Executive Review",
+    "🔥 ATS Match",
+    "🧠 Skill Intelligence",
+    "📝 Cover Letter",
+    "📄 Tailored Resume",
+    "🎙️ Interview Coach",
+    "📧 Outreach",
+    "✍️ Resume Rewrite",
+    "🚀 Upskilling"
+])
+
+    st.markdown("<hr style='border:1px solid rgba(255,255,255,0.05);'>", unsafe_allow_html=True)
+
+
     
     # Re-init agent for tab interactions
     agent = CareerAI(model, temp)
@@ -270,9 +296,55 @@ if st.session_state.analysis_result:
                     file_name="Cover_Letter.txt",
                     mime="text/plain"
                 )
-
-    # --- TAB 5: Mock Interview ---
+    # --- TAB 5: Tailored Resume ---
     with tabs[4]:
+        st.subheader("📄 Tailored Resume Generator")
+        st.info(
+            "Generates a job-optimized version of your resume aligned to the selected role, "
+            "ATS keywords, and recruiter expectations."
+        )
+
+        if st.button("Generate Tailored Resume"):
+            with st.spinner("Optimizing resume for this role..."):
+                prompt = f"""
+    You are an expert resume writer and ATS optimization specialist.
+
+    TASK:
+    Rewrite the candidate's resume to perfectly align with the job description below.
+
+    RULES:
+    - Do NOT invent experience or skills
+    - Preserve factual accuracy
+    - Optimize bullet points for impact
+    - Use strong action verbs
+    - Match keywords from the job description
+    - Keep formatting clean and professional
+    - Output a FULL resume (summary + experience + skills)
+
+    JOB DESCRIPTION:
+    {st.session_state.job_desc}
+
+    CANDIDATE RESUME:
+    {st.session_state.resume_text}
+    """
+
+                tailored_resume = agent.llm.invoke(prompt).content
+
+                st.text_area(
+                    "Tailored Resume (ATS-Optimized)",
+                    tailored_resume,
+                    height=450
+                )
+
+                st.download_button(
+                    label="📥 Download Tailored Resume",
+                    data=tailored_resume,
+                    file_name="Tailored_Resume.txt",
+                    mime="text/plain"
+                )
+
+    # --- TAB 6: Mock Interview ---
+    with tabs[5]:
         st.subheader("🎙️ AI Technical Interviewer")
         st.info("The AI will ask a tough question based on your missing skills.")
         
@@ -295,8 +367,8 @@ if st.session_state.analysis_result:
                     st.markdown("### 👨‍🏫 Feedback")
                     st.markdown(feedback)
 
-    # --- TAB 6: Cold Email ---
-    with tabs[5]:
+    # --- TAB 7: Cold Email ---
+    with tabs[6]:
         st.subheader("📧 Networking Outreach")
         recipient = st.selectbox("Recipient Role", ["Hiring Manager", "Technical Recruiter", "Alumni / Peer"])
         
@@ -310,8 +382,8 @@ if st.session_state.analysis_result:
                 )
                 st.text_area("Copy this Draft:", email_draft, height=250)
                 
-    # --- TAB 7: Rewrite ---
-    with tabs[6]:
+    # --- TAB 8: Rewrite ---
+    with tabs[7]:
         st.subheader("✍️ Summary Rewrite")
         if st.button("Rewrite Summary"):
             with st.spinner("Rewriting..."):
@@ -319,8 +391,8 @@ if st.session_state.analysis_result:
                 res = agent.llm.invoke(prompt).content
                 st.success(res)
     
-    # --- TAB 8: Up-Skill ---
-    with tabs[7]:
+    # --- TAB 9: Up-Skill ---
+    with tabs[8]:
         st.subheader("🚀 Accelerated Learning Plan")
         st.info("The fastest way to learn is to build. Here is a custom project idea to fill your gaps.")
         
