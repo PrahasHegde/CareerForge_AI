@@ -142,8 +142,6 @@ class CareerAI:
             "recipient": recipient
         }).content
     
-
-
     def generate_company_insight(self, company_name):
         """Generates company insights using LLM internal training data (Fallback)."""
         prompt = PromptTemplate(
@@ -163,7 +161,6 @@ class CareerAI:
         )
         return (prompt | self.llm).invoke({"company_name": company_name}).content
     
-
     def generate_learning_plan(self, missing_skills):
         prompt = PromptTemplate(
             input_variables=["missing_skills"],
@@ -178,3 +175,36 @@ class CareerAI:
             """
         )
         return (prompt | self.llm).invoke({"missing_skills": missing_skills}).content
+
+    # --- CORRECTED METHOD: INDENTED INSIDE THE CLASS ---
+    def tailor_resume(self, resume_text, job_desc):
+        """
+        Rewrites the entire resume to align with the specific Job Description.
+        """
+        prompt = f"""
+        You are an expert Career Coach and Resume Writer specialized in ATS optimization. 
+        
+        TASK:
+        Rewrite the provided resume to target the specific Job Description (JD).
+        
+        GUIDELINES:
+        1. STRUCTURE: Keep the standard sections (Summary, Experience, Skills, Education).
+        2. KEYWORDS: Naturally integrate specific technical keywords from the JD into the bullet points.
+        3. IMPACT: Rewrite bullet points using the "Action + Context + Result" format (e.g., "Improved latency by 20% by refactoring API endpoints").
+        4. RELEVANCE: Prioritize experience that matches the JD. De-emphasize irrelevant tasks.
+        5. TRUTH: Do NOT invent experiences or skills. Only optimize what is present.
+        6. FORMAT: Return the result in clean Markdown format.
+
+        RESUME CONTENT:
+        {resume_text}
+
+        TARGET JOB DESCRIPTION:
+        {job_desc}
+
+        OUTPUT:
+        Provide the fully rewritten resume in Markdown.
+        """
+        
+        # Using self.llm directly since ChatGroq supports string input invoke
+        response = self.llm.invoke(prompt)
+        return response.content
