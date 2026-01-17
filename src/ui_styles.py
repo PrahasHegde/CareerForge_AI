@@ -2,189 +2,121 @@ import streamlit as st
 
 def apply_custom_css():
     st.markdown("""
-    <style>
+        <style>
+            /* --- GLOBAL FONTS & BACKGROUND --- */
+            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap');
+            
+            .stApp {
+                background-color: #050505;
+                background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%);
+                font-family: 'Roboto Mono', monospace;
+            }
+            
+            h1, h2, h3, h4, h5, h6 {
+                font-family: 'Orbitron', sans-serif !important;
+                color: #fff;
+                text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            }
 
-    /* =======================
-       DESIGN TOKENS
-    ======================== */
-    :root {
-        --bg-main: #0b1020;
-        --bg-card: rgba(20, 28, 58, 0.55);
-        --border-subtle: rgba(148, 163, 184, 0.12);
-        --accent: #6366f1;
-        --accent-soft: rgba(99, 102, 241, 0.15);
-        --text-main: #e5e7eb;
-        --text-muted: #94a3b8;
-    }
+            /* --- SIDEBAR CYBERPUNK STYLE --- */
+            section[data-testid="stSidebar"] {
+                background-color: #0a0a0a;
+                border-right: 1px solid #333;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+            }
+            
+            /* --- CUSTOM BUTTONS --- */
+            div.stButton > button {
+                background: transparent !important;
+                border: 1px solid #00f3ff !important;
+                color: #00f3ff !important;
+                border-radius: 0px !important; /* Sharp edges */
+                font-family: 'Orbitron', sans-serif !important;
+                transition: all 0.3s ease;
+                box-shadow: 0 0 5px rgba(0, 243, 255, 0.2);
+            }
+            
+            div.stButton > button:hover {
+                background: #00f3ff !important;
+                color: #000 !important;
+                box-shadow: 0 0 20px #00f3ff;
+                transform: scale(1.02);
+            }
 
-    /* =======================
-       GLOBAL RESET
-    ======================== */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+            /* Primary Action Button (The Analyze Button) */
+            button[kind="primary"] {
+                background: linear-gradient(45deg, #ff00ff, #00f3ff) !important;
+                border: none !important;
+                color: #000 !important;
+                font-weight: bold !important;
+            }
 
-    html, body, [class*="css"] {
-        font-family: Inter, -apple-system, BlinkMacSystemFont,
-                     "Segoe UI", Roboto, sans-serif;
-    }
+            /* --- INPUT FIELDS & TEXT AREAS --- */
+            .stTextInput input, .stTextArea textarea, .stSelectbox div[data-baseweb="select"] {
+                background-color: #111 !important;
+                color: #00f3ff !important;
+                border: 1px solid #333 !important;
+                border-radius: 0px !important;
+            }
+            
+            .stTextInput input:focus, .stTextArea textarea:focus {
+                border-color: #ff00ff !important;
+                box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+            }
 
-    body {
-        background: radial-gradient(1200px 600px at 10% -10%, #1e293b 0%, transparent 40%),
-                    var(--bg-main);
-        color: var(--text-main);
-        overflow-x: hidden;
-    }
+            /* --- METRIC CARDS --- */
+            div[data-testid="stMetricValue"] {
+                color: #00f3ff !important;
+                font-family: 'Orbitron', sans-serif;
+                text-shadow: 0 0 10px #00f3ff;
+            }
+            div[data-testid="stMetricLabel"] {
+                color: #b0b0b0 !important;
+            }
+            
+            /* Custom Card Container */
+            .metric-card {
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-left: 3px solid #ff00ff;
+                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(5px);
+                border-radius: 5px;
+            }
 
-    /* =======================
-       HERO BANNER
-    ======================== */
-    .hero-banner {
-        padding: 72px 48px;
-        border-radius: 24px;
-        background:
-            linear-gradient(
-                180deg,
-                rgba(99,102,241,0.12),
-                rgba(99,102,241,0.02)
-            ),
-            var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        backdrop-filter: blur(18px);
-        text-align: center;
-        margin: 48px 0 56px;
-    }
+            /* --- TABS --- */
+            .stTabs [data-baseweb="tab-list"] {
+                gap: 10px;
+            }
+            .stTabs [data-baseweb="tab"] {
+                background-color: transparent;
+                border: 1px solid #333;
+                color: #fff;
+                border-radius: 0px;
+            }
+            .stTabs [aria-selected="true"] {
+                border-bottom: 2px solid #ff00ff !important;
+                color: #ff00ff !important;
+            }
 
-    .hero-banner-title {
-        font-size: 3rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        background: linear-gradient(135deg, #e0e7ff, #a5b4fc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 16px;
-    }
-
-    .hero-banner-subtitle {
-        max-width: 760px;
-        margin: 0 auto;
-        font-size: 1.1rem;
-        line-height: 1.7;
-        color: var(--text-muted);
-    }
-
-    /* =======================
-       INPUT CARD
-    ======================== */
-    .input-card {
-        background: var(--bg-card);
-        backdrop-filter: blur(16px);
-        border: 1px solid var(--border-subtle);
-        border-radius: 20px;
-        padding: 32px;
-        margin-bottom: 28px;
-    }
-
-    /* =======================
-       METRIC CARDS
-    ======================== */
-    .metric-card {
-        background: linear-gradient(
-            180deg,
-            rgba(255,255,255,0.04),
-            rgba(255,255,255,0.01)
-        );
-        border: 1px solid var(--border-subtle);
-        border-radius: 18px;
-        padding: 22px;
-        height: 100%;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .metric-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 40px rgba(0,0,0,0.35);
-    }
-
-    .metric-icon {
-        font-size: 1.6rem;
-        opacity: 0.9;
-        margin-bottom: 10px;
-    }
-
-    .metric-label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        margin-bottom: 6px;
-    }
-
-    .metric-value {
-        font-size: 2.1rem;
-        font-weight: 700;
-        color: #e0e7ff;
-    }
-
-    /* =======================
-       BUTTONS
-    ======================== */
-    .stButton > button {
-        background: linear-gradient(
-            135deg,
-            #6366f1,
-            #4f46e5
-        );
-        color: #fff;
-        font-weight: 600;
-        font-size: 0.95rem;
-        border-radius: 12px;
-        padding: 14px 26px;
-        border: none;
-        transition: all 0.25s ease;
-        box-shadow: 0 12px 28px rgba(79,70,229,0.35);
-    }
-
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 18px 44px rgba(79,70,229,0.45);
-    }
-
-    /* =======================
-       TABS (CLEANER)
-    ======================== */
-    button[data-baseweb="tab"] {
-        font-weight: 600;
-        color: var(--text-muted);
-    }
-
-    button[data-baseweb="tab"][aria-selected="true"] {
-        color: #e0e7ff;
-        border-bottom: 2px solid var(--accent);
-    }
-
-    </style>
+            /* --- SPINNER --- */
+            .stSpinner > div {
+                border-top-color: #00f3ff !important;
+            }
+            
+            /* --- STATUS CONTAINER --- */
+            div[data-testid="stStatusWidget"] {
+                background-color: #111;
+                border: 1px solid #00f3ff;
+            }
+        </style>
     """, unsafe_allow_html=True)
 
-
-def display_metric_card(col, title, value, icon="📊"):
-    with col:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-icon">{icon}</div>
-            <div class="metric-label">{title}</div>
-            <div class="metric-value">{value}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-
-def display_hero_banner(title, subtitle):
-    st.markdown(f"""
-    <div class="hero-banner">
-        <div class="hero-banner-title">{title}</div>
-        <div class="hero-banner-subtitle">{subtitle}</div>
+def display_metric_card(col, title, value):
+    """Helper to display metrics with the new card style"""
+    col.markdown(f"""
+    <div class="metric-card" style="padding: 15px; text-align: center;">
+        <p style="margin: 0; font-size: 0.9rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px;">{title}</p>
+        <p style="margin: 0; font-size: 1.8rem; font-weight: bold; color: #00f3ff; font-family: 'Orbitron', sans-serif; text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);">{value}</p>
     </div>
     """, unsafe_allow_html=True)
